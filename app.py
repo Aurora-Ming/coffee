@@ -24,6 +24,15 @@ def create_connection(db_file):
     return None
 
 
+def is_logged_in():
+    if session.get("email") is None:
+        print("not logged in")
+        return False
+    else:
+        print("logged in")
+        return True
+
+
 @app.route('/')
 def render_homepage():
     return render_template('home.html')
@@ -52,6 +61,8 @@ def render_contact_page():
 
 @app.route('/login', methods=['POST', 'GET'])
 def render_login():
+    if is_logged_in():
+        return redirect('/menu')
     print('Logging in')
     if request.method == "POST":
         email = request.form['email'].strip().lower()
