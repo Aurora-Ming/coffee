@@ -50,7 +50,7 @@ def render_menu_page(cat_id):
     cur.execute(query)
     category_list = cur.fetchall()
     con.close()
-    print(product_list)
+
     return render_template('menu.html', products=product_list, categories=category_list, logged_in=is_logged_in())
 
 
@@ -67,14 +67,14 @@ def render_login():
     if request.method == "POST":
         email = request.form['email'].strip().lower()
         password = request.form['password'].strip()
-        print(email)
+
         query = "SELECT id,fname,password FROM user WHERE email=?"
         con = create_connection(DATABASE)
         cur = con.cursor()
         cur.execute(query, (email,))
         user_data = cur.fetchone()
         con.close()
-        print(user_data)
+
         try:
             user_id = user_data[0]
             first_name = user_data[1]
@@ -98,7 +98,7 @@ def logout():
     print(list(session.keys()))
     [session.pop(key) for key in list(session.keys())]
     print(list(session.keys()))
-    return redirect('?/message=See+you+next+time!')
+    return redirect('/?message=See+you+next+time!')
 
 
 @app.route('/signup', methods=['POST', 'GET'])
@@ -106,7 +106,7 @@ def render_signup(cur=None):
     if is_logged_in():
         return redirect('/menu/1')
     if request.method == 'POST':
-        print(request.form)
+
         fname = request.form.get('fname').title().strip()
         lname = request.form.get('lname').title().strip()
         email = request.form.get('email').lower().strip()
