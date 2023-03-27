@@ -1,7 +1,7 @@
 import sqlite3
 from sqlite3 import Error
 from flask_bcrypt import Bcrypt
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, session
 
 DATABASE = "smile.db"
 
@@ -42,42 +42,43 @@ def render_menu_page(cat_id):
     category_list = cur.fetchall()
     con.close()
     print(product_list)
-    return render_template('/menu.html', products=product_list, categories=category_list)
+    return render_template('menu.html', products=product_list, categories=category_list)
 
 
 @app.route('/contact')
 def render_contact_page():
-    if request.method == "POST":
-        email=request.form['email'].strip().lower()
-        password=request.form['password'].strip()
-
-        query =""" SELECT id, fname,password FROM user WHERE email=?"""
-        con=create_connection(DATABASE)
-        cur=con.cursor()
-        cur.execute(query,(email))
-        user_data = cur.fetchone()
-        con.close()
-        try:
-            user_id=user_data[0]
-            first_name=user_id[1]
-            db_password=user_id[2]
-        except IndexError:
-            return redirect("/login?error=Invalid+username+or+password")
-
-        if not bcrypt.check_password_hash(db_password, password):
-            return redirect(request.referrer+"?error=Email+invalid+or+password+incorrect")
-
-        session['email'] = email
-        session['userid'] = userid
-        session['firtname'] = first_name
-        sessionp['user_id']=user_id
-        print(session)
-        return redirect('/')
     return render_template('contact.html')
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def render_login():
+    print('Logging in')
+    if request.method == "POST":
+        email = request.form['email'].strip().lower()
+        password = request.form['password'].strip()
+        print(email)
+        query = "SELECT id,fname,password FROM user WHERE email=?"
+        con = create_connection(DATABASE)
+        cur = con.cursor()
+        cur.execute(query, (email,))
+        user_data = cur.fetchone()
+        con.close()
+        print(user_data)
+        try:
+            user_id = user_data[0]
+            first_name = user_data[1]
+            db_password = user_data[2]
+        except IndexError:
+            return redirect("/login?error=Invalid+username+or+password")
+
+        if not bcrypt.check_password_hash(db_password, password):
+            return redirect(request.referrer + "?error=Email+invalid+or+password incorrect")
+
+        session['email'] = email
+        session['firstname'] = first_name
+        session['user_id'] = user_id
+        print(session)
+        return redirect('/')
     return render_template("login.html")
 
 
