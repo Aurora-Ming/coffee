@@ -35,7 +35,7 @@ def is_logged_in():
 
 @app.route('/')
 def render_homepage():
-    return render_template('home.html')
+    return render_template('home.html', logged_in=is_logged_in())
 
 
 @app.route('/menu/<cat_id>')
@@ -51,18 +51,18 @@ def render_menu_page(cat_id):
     category_list = cur.fetchall()
     con.close()
     print(product_list)
-    return render_template('menu.html', products=product_list, categories=category_list)
+    return render_template('menu.html', products=product_list, categories=category_list, logged_in=is_logged_in())
 
 
 @app.route('/contact')
 def render_contact_page():
-    return render_template('contact.html')
+    return render_template('contact.html', logged_in=is_logged_in())
 
 
 @app.route('/login', methods=['POST', 'GET'])
 def render_login():
     if is_logged_in():
-        return redirect('/menu')
+        return redirect('/menu/1')
     print('Logging in')
     if request.method == "POST":
         email = request.form['email'].strip().lower()
@@ -90,11 +90,21 @@ def render_login():
         session['user_id'] = user_id
         print(session)
         return redirect('/')
-    return render_template("login.html")
+    return render_template("login.html", logged_in=is_logged_in())
+
+
+@app.route('/logout')
+def logout():
+    print(list(session.keys()))
+    [session.pop(key) for key in list(session.keys())]
+    print(list(session.keys()))
+    return redirect('?/message=See+you+next+time!')
 
 
 @app.route('/signup', methods=['POST', 'GET'])
 def render_signup(cur=None):
+    if is_logged_in():
+        return redirect('/menu/1')
     if request.method == 'POST':
         print(request.form)
         fname = request.form.get('fname').title().strip()
@@ -123,7 +133,7 @@ def render_signup(cur=None):
         con.close()
 
         return redirect("\login")
-    return render_template("signup.html")
+    return render_template("signup.html", logged_in=is_logged_in())
 
 
 app.run(host='0.0.0.0', debug=True)
