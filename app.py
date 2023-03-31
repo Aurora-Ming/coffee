@@ -153,10 +153,11 @@ def add_category():
         print(cat_name)
         con = create_connection(DATABASE)
         query = "INSERT INTO category ('name') VALUES (?)"
-        cur=con.cursor()
-        cur.execute(query,(cat_name,))
+        cur = con.cursor()
+        cur.execute(query, (cat_name,))
         con.commit()
         con.close()
         return redirect('/admin')
+
 
 app.run(host='0.0.0.0', debug=True)
