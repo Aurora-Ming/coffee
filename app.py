@@ -136,4 +136,11 @@ def render_signup(cur=None):
     return render_template("signup.html", logged_in=is_logged_in())
 
 
+@app.route('/admin')
+def render_admin():
+    if not is_logged_in():
+        return redirect('/?message=Need+to+be+logged+in')
+    return render_template("admin.html", logged_in=is_logged_in())
+
+
 app.run(host='0.0.0.0', debug=True)
