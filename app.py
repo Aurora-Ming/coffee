@@ -143,4 +143,20 @@ def render_admin():
     return render_template("admin.html", logged_in=is_logged_in())
 
 
+@app.route('/add_category', methods=["POST"])
+def add_category():
+    if not is_logged_in():
+        return redirect('/?message=Need+to+be+logged+in.')
+    if request.method == "POST":
+        print(request.form)
+        cat_name = request.form.get('name').lower().strip()
+        print(cat_name)
+        con = create_connection(DATABASE)
+        query = "INSERT INTO category ('name') VALUES (?)"
+        cur=con.cursor()
+        cur.execute(query,(cat_name,))
+        con.commit()
+        con.close()
+        return redirect('/admin')
+
 app.run(host='0.0.0.0', debug=True)
