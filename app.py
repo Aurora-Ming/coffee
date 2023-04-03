@@ -139,8 +139,14 @@ def render_signup(cur=None):
 @app.route('/admin')
 def render_admin():
     if not is_logged_in():
-        return redirect('/?message=Need+to+be+logged+in')
-    return render_template("admin.html", logged_in=is_logged_in())
+        return redirect('/?message=Need+to+be+logged+in.')
+    con = create_connection(DATABASE)
+    query ="SELECT * FROM category"
+    cur = con.cursor()
+    cur.execute(query)
+    category_list = cur.fetchall()
+    con.close
+    return render_template("admin.html", logged_in=is_logged_in(),categories=category_list)
 
 
 @app.route('/add_category', methods=["POST"])
