@@ -165,5 +165,16 @@ def add_category():
         con.close()
         return redirect('/admin')
 
-
+@app.route('/delete_category',methods=['POST'])
+def render_delete_category():
+    if not is_logged_in():
+        return redirect("/?message=Need+to+be+logged+in.")
+    if request.method=='POST':
+        category = request.form.get('cat_id')
+        print(category)
+        category = category.split(", ")
+        cat_id = category[0]
+        cat_name = category[1]
+        return render_template("delete_confirm.html",id=cat_id, name=cat_name,type="category")
+    return redirect("/admin")
 app.run(host='0.0.0.0', debug=True)
